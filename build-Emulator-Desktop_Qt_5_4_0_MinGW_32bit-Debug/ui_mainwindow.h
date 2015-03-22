@@ -13,11 +13,18 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLayout>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QOpenGLWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QToolBox>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -25,8 +32,30 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
+    QAction *actionAbout;
     QWidget *centralWidget;
-    QMenuBar *menuBar;
+    QToolBox *console;
+    QWidget *dendyTab;
+    QWidget *horizontalLayoutWidget;
+    QHBoxLayout *dendyLayout;
+    QSpacerItem *dHSpacerL;
+    QOpenGLWidget *dendyVideoOutput;
+    QSpacerItem *dHSpacerC;
+    QFrame *dVLineL;
+    QVBoxLayout *dendyTools;
+    QPushButton *dendyDebuggerButton;
+    QFrame *dVLineR;
+    QSpacerItem *dHSpacerR;
+    QWidget *segaTab;
+    QWidget *horizontalLayoutWidget_2;
+    QHBoxLayout *segaLayout;
+    QSpacerItem *sHSpacerL;
+    QOpenGLWidget *segaVideoOutput;
+    QFrame *sVLineL;
+    QVBoxLayout *segaTools;
+    QPushButton *segaExampleButton;
+    QFrame *sVLineR;
+    QSpacerItem *sHSpacerR;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -40,28 +69,169 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
+        MainWindow->setMinimumSize(QSize(800, 600));
+        MainWindow->setMaximumSize(QSize(800, 600));
+        actionAbout = new QAction(MainWindow);
+        actionAbout->setObjectName(QStringLiteral("actionAbout"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        console = new QToolBox(centralWidget);
+        console->setObjectName(QStringLiteral("console"));
+        console->setGeometry(QRect(0, 0, 783, 580));
+        console->setMinimumSize(QSize(680, 580));
+        console->setMaximumSize(QSize(783, 580));
+        QFont font;
+        font.setFamily(QStringLiteral("Times New Roman"));
+        font.setPointSize(10);
+        font.setBold(false);
+        font.setItalic(false);
+        font.setUnderline(false);
+        font.setWeight(50);
+        font.setStrikeOut(false);
+        font.setKerning(true);
+        console->setFont(font);
+        console->setAutoFillBackground(true);
+        console->setFrameShape(QFrame::StyledPanel);
+        console->setFrameShadow(QFrame::Raised);
+        dendyTab = new QWidget();
+        dendyTab->setObjectName(QStringLiteral("dendyTab"));
+        dendyTab->setGeometry(QRect(0, 0, 781, 520));
+        horizontalLayoutWidget = new QWidget(dendyTab);
+        horizontalLayoutWidget->setObjectName(QStringLiteral("horizontalLayoutWidget"));
+        horizontalLayoutWidget->setGeometry(QRect(0, 0, 781, 516));
+        dendyLayout = new QHBoxLayout(horizontalLayoutWidget);
+        dendyLayout->setSpacing(6);
+        dendyLayout->setContentsMargins(11, 11, 11, 11);
+        dendyLayout->setObjectName(QStringLiteral("dendyLayout"));
+        dendyLayout->setContentsMargins(0, 0, 0, 0);
+        dHSpacerL = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        dendyLayout->addItem(dHSpacerL);
+
+        dendyVideoOutput = new QOpenGLWidget(horizontalLayoutWidget);
+        dendyVideoOutput->setObjectName(QStringLiteral("dendyVideoOutput"));
+        sizePolicy.setHeightForWidth(dendyVideoOutput->sizePolicy().hasHeightForWidth());
+        dendyVideoOutput->setSizePolicy(sizePolicy);
+        dendyVideoOutput->setMinimumSize(QSize(512, 480));
+        dendyVideoOutput->setMaximumSize(QSize(512, 480));
+
+        dendyLayout->addWidget(dendyVideoOutput);
+
+        dHSpacerC = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        dendyLayout->addItem(dHSpacerC);
+
+        dVLineL = new QFrame(horizontalLayoutWidget);
+        dVLineL->setObjectName(QStringLiteral("dVLineL"));
+        dVLineL->setFrameShadow(QFrame::Raised);
+        dVLineL->setFrameShape(QFrame::VLine);
+
+        dendyLayout->addWidget(dVLineL);
+
+        dendyTools = new QVBoxLayout();
+        dendyTools->setSpacing(6);
+        dendyTools->setObjectName(QStringLiteral("dendyTools"));
+        dendyDebuggerButton = new QPushButton(horizontalLayoutWidget);
+        dendyDebuggerButton->setObjectName(QStringLiteral("dendyDebuggerButton"));
+
+        dendyTools->addWidget(dendyDebuggerButton);
+
+
+        dendyLayout->addLayout(dendyTools);
+
+        dVLineR = new QFrame(horizontalLayoutWidget);
+        dVLineR->setObjectName(QStringLiteral("dVLineR"));
+        dVLineR->setFrameShadow(QFrame::Raised);
+        dVLineR->setFrameShape(QFrame::VLine);
+
+        dendyLayout->addWidget(dVLineR);
+
+        dHSpacerR = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        dendyLayout->addItem(dHSpacerR);
+
+        console->addItem(dendyTab, QStringLiteral("DENDY"));
+        segaTab = new QWidget();
+        segaTab->setObjectName(QStringLiteral("segaTab"));
+        segaTab->setGeometry(QRect(0, 0, 781, 520));
+        horizontalLayoutWidget_2 = new QWidget(segaTab);
+        horizontalLayoutWidget_2->setObjectName(QStringLiteral("horizontalLayoutWidget_2"));
+        horizontalLayoutWidget_2->setGeometry(QRect(0, 0, 781, 521));
+        segaLayout = new QHBoxLayout(horizontalLayoutWidget_2);
+        segaLayout->setSpacing(6);
+        segaLayout->setContentsMargins(11, 11, 11, 11);
+        segaLayout->setObjectName(QStringLiteral("segaLayout"));
+        segaLayout->setContentsMargins(0, 0, 0, 0);
+        sHSpacerL = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        segaLayout->addItem(sHSpacerL);
+
+        segaVideoOutput = new QOpenGLWidget(horizontalLayoutWidget_2);
+        segaVideoOutput->setObjectName(QStringLiteral("segaVideoOutput"));
+        sizePolicy.setHeightForWidth(segaVideoOutput->sizePolicy().hasHeightForWidth());
+        segaVideoOutput->setSizePolicy(sizePolicy);
+        segaVideoOutput->setMinimumSize(QSize(640, 448));
+        segaVideoOutput->setMaximumSize(QSize(640, 448));
+
+        segaLayout->addWidget(segaVideoOutput);
+
+        sVLineL = new QFrame(horizontalLayoutWidget_2);
+        sVLineL->setObjectName(QStringLiteral("sVLineL"));
+        sVLineL->setFrameShadow(QFrame::Raised);
+        sVLineL->setFrameShape(QFrame::VLine);
+
+        segaLayout->addWidget(sVLineL);
+
+        segaTools = new QVBoxLayout();
+        segaTools->setSpacing(6);
+        segaTools->setObjectName(QStringLiteral("segaTools"));
+        segaExampleButton = new QPushButton(horizontalLayoutWidget_2);
+        segaExampleButton->setObjectName(QStringLiteral("segaExampleButton"));
+
+        segaTools->addWidget(segaExampleButton);
+
+
+        segaLayout->addLayout(segaTools);
+
+        sVLineR = new QFrame(horizontalLayoutWidget_2);
+        sVLineR->setObjectName(QStringLiteral("sVLineR"));
+        sVLineR->setFrameShadow(QFrame::Raised);
+        sVLineR->setFrameShape(QFrame::VLine);
+
+        segaLayout->addWidget(sVLineR);
+
+        sHSpacerR = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        segaLayout->addItem(sHSpacerR);
+
+        console->addItem(segaTab, QStringLiteral("SEGA"));
         MainWindow->setCentralWidget(centralWidget);
-        menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 800, 20));
-        MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
+        MainWindow->addToolBar(Qt::LeftToolBarArea, mainToolBar);
+        MainWindow->insertToolBarBreak(mainToolBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setEnabled(false);
+        statusBar->setSizeGripEnabled(false);
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
+
+        console->setCurrentIndex(0);
+
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Emulator", 0));
+        actionAbout->setText(QApplication::translate("MainWindow", "About", 0));
+        dendyDebuggerButton->setText(QApplication::translate("MainWindow", "Debugger", 0));
+        console->setItemText(console->indexOf(dendyTab), QApplication::translate("MainWindow", "DENDY", 0));
+        segaExampleButton->setText(QApplication::translate("MainWindow", "Sega button", 0));
+        console->setItemText(console->indexOf(segaTab), QApplication::translate("MainWindow", "SEGA", 0));
     } // retranslateUi
 
 };

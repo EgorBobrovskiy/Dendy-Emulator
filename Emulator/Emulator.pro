@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dendydebugger.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    dendydebugger.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dendydebugger.ui
