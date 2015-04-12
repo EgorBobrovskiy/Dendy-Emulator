@@ -356,6 +356,12 @@ public:
         memoryView = new QListWidget(memory);
         memoryView->setObjectName(QStringLiteral("memoryView"));
         memoryView->setGeometry(QRect(0, 21, 461, 251));
+        QFont font5;
+        font5.setBold(true);
+        font5.setWeight(75);
+        memoryView->setFont(font5);
+        memoryView->setAlternatingRowColors(true);
+        memoryView->setTextElideMode(Qt::ElideRight);
 
         layout->addWidget(memory);
 

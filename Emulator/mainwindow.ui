@@ -160,6 +160,13 @@
        <item>
         <layout class="QVBoxLayout" name="dendyTools">
          <item>
+          <widget class="QPushButton" name="openFileNes">
+           <property name="text">
+            <string>Open</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="dendyDebuggerButton">
            <property name="text">
             <string>Debugger</string>
@@ -314,7 +321,7 @@
     <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar">

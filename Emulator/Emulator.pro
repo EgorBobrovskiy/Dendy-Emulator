@@ -14,10 +14,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dendydebugger.cpp
+    dendydebugger.cpp \
+    dendycpu.cpp \
+    dendymemory.cpp \
+    dandy.cpp
 
 HEADERS  += mainwindow.h \
-    dendydebugger.h
+    dendydebugger.h \
+    dendycpu.h \
+    dendymemory.h \
+    dandy.h
 
 FORMS    += mainwindow.ui \
     dendydebugger.ui

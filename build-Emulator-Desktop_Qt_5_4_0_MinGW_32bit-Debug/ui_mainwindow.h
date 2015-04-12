@@ -43,6 +43,7 @@ public:
     QSpacerItem *dHSpacerC;
     QFrame *dVLineL;
     QVBoxLayout *dendyTools;
+    QPushButton *openFileNes;
     QPushButton *dendyDebuggerButton;
     QFrame *dVLineR;
     QSpacerItem *dHSpacerR;
@@ -131,6 +132,11 @@ public:
         dendyTools = new QVBoxLayout();
         dendyTools->setSpacing(6);
         dendyTools->setObjectName(QStringLiteral("dendyTools"));
+        openFileNes = new QPushButton(horizontalLayoutWidget);
+        openFileNes->setObjectName(QStringLiteral("openFileNes"));
+
+        dendyTools->addWidget(openFileNes);
+
         dendyDebuggerButton = new QPushButton(horizontalLayoutWidget);
         dendyDebuggerButton->setObjectName(QStringLiteral("dendyDebuggerButton"));
 
@@ -209,7 +215,6 @@ public:
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
         MainWindow->addToolBar(Qt::LeftToolBarArea, mainToolBar);
-        MainWindow->insertToolBarBreak(mainToolBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         statusBar->setEnabled(false);
@@ -228,6 +233,7 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Emulator", 0));
         actionAbout->setText(QApplication::translate("MainWindow", "About", 0));
+        openFileNes->setText(QApplication::translate("MainWindow", "Open", 0));
         dendyDebuggerButton->setText(QApplication::translate("MainWindow", "Debugger", 0));
         console->setItemText(console->indexOf(dendyTab), QApplication::translate("MainWindow", "DENDY", 0));
         segaExampleButton->setText(QApplication::translate("MainWindow", "Sega button", 0));
