@@ -6,27 +6,41 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->ui->dendyDebuggerButton->setEnabled (false);
+    this->ui->console->setCurrentIndex (0);
 }
 
 MainWindow::~MainWindow()
 {
-    delete this->dDebugger;
-    delete ui;
-    if (this->nesFile->isOpen ()){
-        this->nesFile->close ();
+    if (this->dDebugger){
+        delete this->dDebugger;
     }
-    delete this->nesFile;
+    
+    if (this->nesFile && this->nesFile->isOpen ()){
+        this->nesFile->close ();        
+        delete this->nesFile;
+    }
+    
+    if (this->memory){
+        delete this->memory;
+    }
+    
+    if (this->memory){
+        delete this->cpu;
+    }
+    
+    delete ui;
 }
 
 // opening dendy debugger
-void MainWindow::on_dendyDebuggerButton_clicked()
-{
-    this->dDebugger = new DendyDebugger(this->nesFile);
-    this->dDebugger->open ();
+void MainWindow::on_dendyDebuggerButton_clicked(){
+    if (!this->dDebugger){
+        this->dDebugger = new DendyDebugger(this->cpu, this->memory);
+    }
+    this->dDebugger->exec ();
 }
 
-void MainWindow::on_openFileNes_clicked()
-{    
+void MainWindow::on_openFileNes_clicked(){    
     QFileDialog dialog(this);
     dialog.setViewMode (QFileDialog::Detail);
     dialog.setNameFilter (tr("ROM file(*.nes)"));
@@ -41,6 +55,8 @@ void MainWindow::on_openFileNes_clicked()
     if (this->nesFile){
         if (this->nesFile->isOpen ()){
             this->nesFile->close ();
+            delete this->dDebugger;
+            this->dDebugger = NULL;
         }
         
         delete this->nesFile;
@@ -49,7 +65,10 @@ void MainWindow::on_openFileNes_clicked()
     this->nesFile = new QFile(nesFileName);
     if (!this->nesFile->open (QIODevice::ReadOnly)){
         std::cout << "Error in opening file " << nesFileName.toStdString ();
+        return;
     }
+    
+    this->ui->dendyDebuggerButton->setEnabled (true);
     
     /////////////////////////////////////////////////
     ////////// delete this after debugging //////////
@@ -59,4 +78,9 @@ void MainWindow::on_openFileNes_clicked()
         delete this->memory;
     }
     this->memory = new DendyMemory(this->nesFile);
+    
+    if (!this->cpu){
+        delete this->cpu;
+    }
+    this->cpu = new DendyCPU(this->memory);
 }

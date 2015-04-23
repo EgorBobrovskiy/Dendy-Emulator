@@ -62,16 +62,17 @@ DendyMemory::~DendyMemory()
     delete[] this->signGeneratorData;
 }
 
-void DendyMemory::writeMemory (short adress, char value){
+void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
+    
     switch (adress>>13) {
     /* Запись во внутреннее ОЗУ */
     case 0:
-        RAM->insert(adress & 0x07FF, value);
+        this->RAM->insert(adress & 0x07FF, value);
         break;
         
     /* Запись в ОЗУ картриджа */
     case 3:
-        WRAM->insert(adress & 0x1FFF, value);
+        this->WRAM->insert(adress & 0x1FFF, value);
         break;
         
     /* Запись в регистры звукового процессора или видеопроцессора */
@@ -79,13 +80,21 @@ void DendyMemory::writeMemory (short adress, char value){
     case 2:
         break;
         
-    /* Запись в регистр контроллера страниц памяти в картридже */
-    default:
+    /* Запись в переключаемый банк ПЗУ картриджа */
+    case 4:
+    case 5:
+        this->sROM->insert (adress & 0x3FFF, value);
         break;
+        
+    /* Запись в непереключаемый банк ПЗУ картриджа */
+    case 6:
+    case 7:
+        this->ROM->insert (adress & 0x3FFF, value);
     }
 }
 
-char DendyMemory::readMemory (short adress){
+unsigned char DendyMemory::readMemory (unsigned short adress){
+    
     switch (adress>>13) {
     /* Чтение из внутреннего ОЗУ приставки */
     case 0:
@@ -100,11 +109,40 @@ char DendyMemory::readMemory (short adress){
     case 2:
         break;
         
-    /* Чтение из ПЗУ картриджа */
-    default:
-        break;
+    /* Чтение из переключаемого банка ПЗУ картриджа */
+    case 4:
+    case 5:
+        return this->sROM->at (adress & 0x3FFF);
+        
+    /* Чтение из непереключаемого банка ПЗУ картриджа */
+    case 6:
+    case 7:
+        return this->ROM->at (adress & 0x3FFF);
     }
     
     return 0;
 }
 
+QByteArray* DendyMemory::getRAM (){
+    return this->RAM;
+}
+
+QByteArray** DendyMemory::getPages (){
+    return this->pages;
+}
+
+QByteArray* DendyMemory::getROM (){
+    return this->ROM;
+}
+
+QByteArray* DendyMemory::getSROM (){
+    return this->sROM;
+}
+
+QByteArray** DendyMemory::getSignGeneratorData (){
+    return this->signGeneratorData;
+}
+
+QByteArray* DendyMemory::getWRAM (){
+    return this->WRAM;
+}

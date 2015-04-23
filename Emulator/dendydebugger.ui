@@ -31,25 +31,6 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>440</y>
-     <width>461</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Close</set>
-   </property>
-   <property name="centerButtons">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
@@ -153,10 +134,10 @@
          </font>
         </property>
         <property name="text">
-         <string>4C2F</string>
+         <string>00:00</string>
         </property>
         <property name="maxLength">
-         <number>4</number>
+         <number>5</number>
         </property>
         <property name="frame">
          <bool>true</bool>
@@ -236,7 +217,10 @@
             <string/>
            </property>
            <property name="checkable">
-            <bool>false</bool>
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -254,9 +238,9 @@
           </widget>
          </item>
          <item row="1" column="3">
-          <widget class="QCheckBox" name="checkBox_4">
+          <widget class="QCheckBox" name="B">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -414,6 +398,22 @@
            </property>
            <property name="text">
             <string>C</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="flagB">
+           <property name="maximumSize">
+            <size>
+             <width>15</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>B</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -868,6 +868,45 @@
         <enum>Qt::ElideRight</enum>
        </property>
       </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>461</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="resetCPU">
+      <property name="text">
+       <string>Сброс</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="stepCPU">
+      <property name="text">
+       <string>Шаг</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDialogButtonBox" name="buttonBox">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Close</set>
+      </property>
+      <property name="centerButtons">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>

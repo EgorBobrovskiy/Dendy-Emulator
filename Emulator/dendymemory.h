@@ -25,8 +25,16 @@ public:
     DendyMemory(QFile* nesFile);
     ~DendyMemory();
 
-    void writeMemory(short adress, char value);
-    char readMemory(short adress);
+    void writeMemory(unsigned short adress, unsigned char value);
+    unsigned char readMemory(unsigned short adress);
+    
+    QByteArray* getRAM();
+    QByteArray* getWRAM();
+    QByteArray* getSROM();
+    QByteArray* getROM();
+    
+    QByteArray** getPages();
+    QByteArray** getSignGeneratorData();
 };
 
 #endif // DENDYMEMORY_H

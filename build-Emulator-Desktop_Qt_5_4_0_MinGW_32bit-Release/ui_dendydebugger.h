@@ -44,7 +44,7 @@ public:
     QCheckBox *N;
     QCheckBox *checkBox_3;
     QCheckBox *V;
-    QCheckBox *checkBox_4;
+    QCheckBox *B;
     QCheckBox *D;
     QCheckBox *I;
     QCheckBox *Z;
@@ -55,6 +55,7 @@ public:
     QLabel *flagI;
     QLabel *flagZ;
     QLabel *flagC;
+    QLabel *flagB;
     QWidget *s;
     QLabel *sName;
     QLineEdit *sValue;
@@ -172,13 +173,13 @@ public:
 
         values->addWidget(V, 1, 1, 1, 1);
 
-        checkBox_4 = new QCheckBox(gridLayoutWidget);
-        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
-        checkBox_4->setEnabled(false);
-        checkBox_4->setMaximumSize(QSize(15, 15));
-        checkBox_4->setCheckable(false);
+        B = new QCheckBox(gridLayoutWidget);
+        B->setObjectName(QStringLiteral("B"));
+        B->setEnabled(true);
+        B->setMaximumSize(QSize(15, 15));
+        B->setCheckable(false);
 
-        values->addWidget(checkBox_4, 1, 3, 1, 1);
+        values->addWidget(B, 1, 3, 1, 1);
 
         D = new QCheckBox(gridLayoutWidget);
         D->setObjectName(QStringLiteral("D"));
@@ -245,6 +246,13 @@ public:
         flagC->setAlignment(Qt::AlignCenter);
 
         values->addWidget(flagC, 0, 7, 1, 1);
+
+        flagB = new QLabel(gridLayoutWidget);
+        flagB->setObjectName(QStringLiteral("flagB"));
+        flagB->setMaximumSize(QSize(15, 30));
+        flagB->setAlignment(Qt::AlignCenter);
+
+        values->addWidget(flagB, 0, 3, 1, 1);
 
         s = new QWidget(registers);
         s->setObjectName(QStringLiteral("s"));
@@ -408,7 +416,7 @@ public:
         N->setText(QString());
         checkBox_3->setText(QString());
         V->setText(QString());
-        checkBox_4->setText(QString());
+        B->setText(QString());
         D->setText(QString());
         I->setText(QString());
         Z->setText(QString());
@@ -419,6 +427,7 @@ public:
         flagI->setText(QApplication::translate("DendyDebugger", "I", 0));
         flagZ->setText(QApplication::translate("DendyDebugger", "Z", 0));
         flagC->setText(QApplication::translate("DendyDebugger", "C", 0));
+        flagB->setText(QApplication::translate("DendyDebugger", "B", 0));
         sName->setText(QApplication::translate("DendyDebugger", "S:", 0));
         sValue->setText(QApplication::translate("DendyDebugger", "5B", 0));
         pName->setText(QApplication::translate("DendyDebugger", "P:", 0));

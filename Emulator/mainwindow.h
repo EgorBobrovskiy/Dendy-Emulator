@@ -6,6 +6,8 @@
 #include <iostream>
 #include "dendydebugger.h"
 #include "dendymemory.h"
+#include "dendycpu.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -14,9 +16,10 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    DendyDebugger *dDebugger;
+    DendyDebugger *dDebugger = NULL;
     QFile* nesFile = NULL; // .nes file
     DendyMemory* memory = NULL;
+    DendyCPU* cpu = NULL;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
