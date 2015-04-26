@@ -9,13 +9,13 @@ DendyDebugger::DendyDebugger(QWidget *parent) :
 }
 
 //DendyDebugger::DendyDebugger(QFile* nesFile, QWidget *parent) :
-DendyDebugger::DendyDebugger(DendyCPU* cpu, DendyMemory* memory, QWidget *parent) :
+DendyDebugger::DendyDebugger(Dendy *dendy, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DendyDebugger)
 {
     ui->setupUi(this);
-    this->cpu = cpu;
-    this->memory = memory;
+    this->cpu = dendy->getCPU ();
+    this->memory = dendy->getMemory ();
     
     this->initMemoryView ();
     this->initRegisters ();
@@ -24,8 +24,6 @@ DendyDebugger::DendyDebugger(DendyCPU* cpu, DendyMemory* memory, QWidget *parent
 DendyDebugger::~DendyDebugger()
 {
     delete ui;
-    this->memory = NULL;
-    this->cpu = NULL;
 }
 
 void DendyDebugger::showMemoryBlock (QByteArray *block, short startAdress){
@@ -185,7 +183,7 @@ void DendyDebugger::on_N_stateChanged(int state){
 // сброс состояния процессора
 void DendyDebugger::on_resetCPU_clicked()
 {
-    this->cpu->ResetCPU ();
+    this->cpu->resetCPU ();
     this->initRegisters ();
 }
 

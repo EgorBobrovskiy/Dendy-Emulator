@@ -5,8 +5,7 @@
 #include <QFileDialog>
 #include <iostream>
 #include "dendydebugger.h"
-#include "dendymemory.h"
-#include "dendycpu.h"
+#include "dendy.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,8 +17,9 @@ class MainWindow : public QMainWindow
 private:
     DendyDebugger *dDebugger = NULL;
     QFile* nesFile = NULL; // .nes file
-    DendyMemory* memory = NULL;
-    DendyCPU* cpu = NULL;
+    Dendy* dendy = NULL;   // dendy console
+    
+    void dendyRun();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

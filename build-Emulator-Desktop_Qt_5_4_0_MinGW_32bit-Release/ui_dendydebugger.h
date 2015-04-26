@@ -177,7 +177,7 @@ public:
         B->setObjectName(QStringLiteral("B"));
         B->setEnabled(true);
         B->setMaximumSize(QSize(15, 15));
-        B->setCheckable(false);
+        B->setCheckable(true);
 
         values->addWidget(B, 1, 3, 1, 1);
 

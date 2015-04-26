@@ -12,6 +12,9 @@ private:
     QByteArray* WRAM;//ОЗУ картриджа(6000h - 7FFFh)
     QByteArray* sROM;//переключаемый банк ПЗУ картриджа(8000h - BFFFh)
     QByteArray* ROM; //непереключаемый банк ПЗУ картриджа(C000h - FFFFh). всегда последняя страница
+    QByteArray* videoRegisters; // регистры видеопроцессора (2000h - 2007h)
+    QByteArray* ctrlRegisters;  // регистры звукового процессора, контроллера прямого доступа к памяти
+                                // и контроллера ввода/вывода (4000h - 4016h)
     
     QByteArray** pages;//страницы памяти в картридже
     int numberOfPages;

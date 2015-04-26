@@ -16,71 +16,67 @@ MainWindow::~MainWindow()
         delete this->dDebugger;
     }
     
-    if (this->nesFile && this->nesFile->isOpen ()){
-        this->nesFile->close ();        
+    if (this->nesFile){      
         delete this->nesFile;
     }
     
-    if (this->memory){
-        delete this->memory;
-    }
-    
-    if (this->memory){
-        delete this->cpu;
+    if (this->dendy){
+        delete this->dendy;
     }
     
     delete ui;
 }
 
-// opening dendy debugger
+// открытие отладчика
 void MainWindow::on_dendyDebuggerButton_clicked(){
     if (!this->dDebugger){
-        this->dDebugger = new DendyDebugger(this->cpu, this->memory);
+        this->dDebugger = new DendyDebugger(this->dendy);
     }
     this->dDebugger->exec ();
 }
 
+// выбор и открытие файла
 void MainWindow::on_openFileNes_clicked(){    
     QFileDialog dialog(this);
     dialog.setViewMode (QFileDialog::Detail);
     dialog.setNameFilter (tr("ROM file(*.nes)"));
     
     QStringList fileNames;
-    if (dialog.exec()){
+    if (dialog.exec()){        
         fileNames = dialog.selectedFiles ();
-    }
-    
-    QString nesFileName = fileNames.first ();
-    
-    if (this->nesFile){
-        if (this->nesFile->isOpen ()){
-            this->nesFile->close ();
-            delete this->dDebugger;
-            this->dDebugger = NULL;
+        
+        QString nesFileName = fileNames.first ();
+        
+        if (this->nesFile){
+            if (this->nesFile->isOpen ()){
+                this->nesFile->close ();
+                delete this->dDebugger;
+                this->dDebugger = NULL;
+            }
+            
+            delete this->nesFile;
         }
         
-        delete this->nesFile;
+        this->nesFile = new QFile(nesFileName);
+        if (!this->nesFile->open (QIODevice::ReadOnly)){
+            std::cout << "Error in opening file " << nesFileName.toStdString ();
+            return;
+        }
+        
+        this->ui->dendyDebuggerButton->setEnabled (true);
+        
+        if (!this->dendy){
+            delete this->dendy;
+        }
+        this->dendy = new Dendy(this->nesFile);
     }
+}
+
+void MainWindow::dendyRun (){
+    // выполнять обновление экрана
+    // полученным кадром
     
-    this->nesFile = new QFile(nesFileName);
-    if (!this->nesFile->open (QIODevice::ReadOnly)){
-        std::cout << "Error in opening file " << nesFileName.toStdString ();
-        return;
+    while (1){
+        this->dendy->getFrame ();
     }
-    
-    this->ui->dendyDebuggerButton->setEnabled (true);
-    
-    /////////////////////////////////////////////////
-    ////////// delete this after debugging //////////
-    /////////////////////////////////////////////////
-    
-    if (!this->memory){
-        delete this->memory;
-    }
-    this->memory = new DendyMemory(this->nesFile);
-    
-    if (!this->cpu){
-        delete this->cpu;
-    }
-    this->cpu = new DendyCPU(this->memory);
 }

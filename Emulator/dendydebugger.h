@@ -3,8 +3,7 @@
 
 #include <QDialog>
 #include <QFile>
-#include "dendymemory.h"
-#include "dendycpu.h"
+#include "dendy.h"
 
 namespace Ui {
 class DendyDebugger;
@@ -16,7 +15,7 @@ class DendyDebugger : public QDialog
 
 public:
     explicit DendyDebugger(QWidget *parent = 0);
-    explicit DendyDebugger(DendyCPU* cpu, DendyMemory *memory, QWidget *parent = 0);
+    explicit DendyDebugger(Dendy* dendy, QWidget *parent = 0);
     ~DendyDebugger();
     
 

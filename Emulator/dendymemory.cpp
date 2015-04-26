@@ -43,6 +43,12 @@ DendyMemory::DendyMemory(QFile *nesFile)
     
     this->ROM = *(this->pages + this->numberOfPages - 1); // последняя страница
     this->sROM = *(this->pages);// первая страница в переключаемом банке ПЗУ
+    
+    // инициализация регистров видеопроцессора
+    this->videoRegisters = new QByteArray(8, '\0');
+    
+    // инициализация регистров звукового процессора, контроллера ПДП и ввода/вывода
+    this->ctrlRegisters = new QByteArray(0x17, '\0');
 }
 
 DendyMemory::~DendyMemory()
@@ -60,6 +66,9 @@ DendyMemory::~DendyMemory()
     
     delete[] this->pages;
     delete[] this->signGeneratorData;
+    
+    delete this->videoRegisters;
+    delete this->ctrlRegisters;
 }
 
 void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
@@ -75,9 +84,17 @@ void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
         this->WRAM->insert(adress & 0x1FFF, value);
         break;
         
-    /* Запись в регистры звукового процессора или видеопроцессора */
+    /* Запись в регистры видеопроцессора */
     case 1:
+        if ((adress & 0xFFF8) == 0x2000)
+        this->videoRegisters->insert (adress & 0x0007, value);
+        break;
+        
+    /* Запись в регистры звукового процессора, контроллера ПДП и ввода/вывода */
     case 2:
+        if (adress >= 0x4000 && adress <= 0x4016){
+            this->ctrlRegisters->insert (0x001F, value);
+        }
         break;
         
     /* Запись в переключаемый банк ПЗУ картриджа */
@@ -98,16 +115,25 @@ unsigned char DendyMemory::readMemory (unsigned short adress){
     switch (adress>>13) {
     /* Чтение из внутреннего ОЗУ приставки */
     case 0:
-        return RAM->at (adress & 0x07FF);
+        return this->RAM->at (adress & 0x07FF);
         
     /* Чтение из ОЗУ картриджа */
     case 3:
-        return WRAM->at(adress & 0x1FFF);
+        return this->WRAM->at(adress & 0x1FFF);
         
-    /* Чтение из порта ввода/вывода */
+    /* Чтение регистров видеопроцессора */
     case 1:
+        if ((adress & 0xFFF8) == 0x2000){
+            return this->videoRegisters->at (adress & 0x0007);
+        }
+        return 0x00;
+    
+    /* Чтение регистров звукового процессора, контроллера ПДП и ввода/вывода */            
     case 2:
-        break;
+        if (adress >= 0x4000 && adress <= 0x4016){
+            return this->ctrlRegisters->at (adress & 0x001F);
+        }
+        return 0x00;
         
     /* Чтение из переключаемого банка ПЗУ картриджа */
     case 4:

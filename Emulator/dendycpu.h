@@ -18,23 +18,41 @@ private:
             unsigned short W; /* слово */
         } pc;
     } cpuReg;       /* 16-разрядный счётчик команд */
-
-    int iPeriod;    /* количество тактов до формирования след. кадра */
-    int iTact;      /* число тактов, затраченных на выполнение команды */
     
     DendyMemory *memory = NULL;
 
 public:
     DendyCPU(DendyMemory* memory);
     ~DendyCPU();
-    void ResetCPU();
+    void resetCPU();
+    char nmiCPU();
     char stepCPU();
+    //void runCPU();
     
     // команды
     void comADC(unsigned char operand);
     void comAND(unsigned char operand);
     unsigned char comASL(unsigned char operand);
     void comBIT(unsigned char operand);
+    char comBranch(bool condition);
+    char comBRK();
+    void comCMP(unsigned char operand);
+    void comCPX(unsigned char operand);
+    void comCPY(unsigned char operand);
+    void comDEC(unsigned short adress);
+    void comEOR(unsigned char operand);
+    void comINC(unsigned short adress);
+    char comJSR();
+    void comLDA(unsigned char operand);
+    void comLDX(unsigned char operand);
+    void comLDY(unsigned char operand);
+    unsigned char comLSR(unsigned char operand);
+    void comORA(unsigned char operand);
+    unsigned char comROL(unsigned char operand);
+    unsigned char comROR(unsigned char operand);
+    char comRTI();
+    char comRTS();
+    void comSBC(unsigned char operand);
     
     // методы адресации
     unsigned short adrZP();
