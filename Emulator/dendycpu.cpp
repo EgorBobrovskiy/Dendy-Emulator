@@ -1133,22 +1133,18 @@ char DendyCPU::comBranch (bool condition){
 }
 
 // программное прерывание
-char DendyCPU::comBRK (){    
-    if (!this->getFlagI ()){
-        this->pushStack (this->cpuReg.pc.B.h);
-        this->pushStack (this->cpuReg.pc.B.l);
-        this->pushStack (this->cpuReg.p);
+char DendyCPU::comBRK (){
+    this->pushStack (this->cpuReg.pc.B.h);
+    this->pushStack (this->cpuReg.pc.B.l);
+    this->pushStack (this->cpuReg.p);
         
-        this->cpuReg.pc.B.l = this->memory->readMemory (0xFFFE);
-        this->cpuReg.pc.B.h = this->memory->readMemory (0xFFFF);
+    this->cpuReg.pc.B.l = this->memory->readMemory (0xFFFE);
+    this->cpuReg.pc.B.h = this->memory->readMemory (0xFFFF);
         
-        this->setFlagB (true);
-        this->setFlagI (true);
+    this->setFlagB (true);
+    this->setFlagI (true);
         
-        return 0x07;
-    }
-    
-    return 0x00;
+    return 0x07;
 }
 
 // команда CMP (коды C9, C5, D5, CD, DD, D9, C1, D1)

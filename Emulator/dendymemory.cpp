@@ -76,23 +76,28 @@ void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
     switch (adress>>13) {
     /* Запись во внутреннее ОЗУ */
     case 0:
+        this->RAM->remove (adress & 0x07FF, 1);
         this->RAM->insert(adress & 0x07FF, value);
         break;
         
     /* Запись в ОЗУ картриджа */
     case 3:
+        this->WRAM->remove (adress & 0x1FFF, 1);
         this->WRAM->insert(adress & 0x1FFF, value);
         break;
         
     /* Запись в регистры видеопроцессора */
     case 1:
-        if ((adress & 0xFFF8) == 0x2000)
-        this->videoRegisters->insert (adress & 0x0007, value);
+        if ((adress & 0xFFF8) == 0x2000){
+            this->videoRegisters->remove (adress & 0x0007, 1);
+            this->videoRegisters->insert (adress & 0x0007, value);
+        }
         break;
         
     /* Запись в регистры звукового процессора, контроллера ПДП и ввода/вывода */
     case 2:
         if (adress >= 0x4000 && adress <= 0x4016){
+            this->ctrlRegisters->remove (0x001F, 1);
             this->ctrlRegisters->insert (0x001F, value);
         }
         break;
@@ -100,12 +105,14 @@ void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
     /* Запись в переключаемый банк ПЗУ картриджа */
     case 4:
     case 5:
+        this->sROM->remove (adress & 0x3FFF, 1);
         this->sROM->insert (adress & 0x3FFF, value);
         break;
         
     /* Запись в непереключаемый банк ПЗУ картриджа */
     case 6:
     case 7:
+        this->ROM->remove (adress & 0x3FFF, 1);
         this->ROM->insert (adress & 0x3FFF, value);
     }
 }

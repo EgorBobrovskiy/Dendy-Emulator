@@ -1,5 +1,5 @@
 #include "dendy.h"
-#define FRAME_PERIOD 70938 // количество тактов до формирования кадра
+#define FRAME_PERIOD 35468 // количество тактов до формирования кадра
 
 Dendy::Dendy(QFile* nesFile){
     this->memory = new DendyMemory(nesFile);
