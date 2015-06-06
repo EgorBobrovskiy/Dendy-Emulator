@@ -11,6 +11,10 @@ namespace Ui {
 class MainWindow;
 }
 
+///
+/// \brief The MainWindow class -- главное окно приложения
+///
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

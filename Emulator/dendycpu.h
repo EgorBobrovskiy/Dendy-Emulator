@@ -3,6 +3,10 @@
 
 #include "dendymemory.h"
 
+///
+/// \brief The DendyCPU class -- эмулятор работы процессора (MOS 6502)
+///
+
 class DendyCPU
 {
 private:

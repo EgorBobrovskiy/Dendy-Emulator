@@ -26,13 +26,13 @@ DendyDebugger::~DendyDebugger()
     delete ui;
 }
 
-void DendyDebugger::showMemoryBlock (QByteArray *block, short startAdress){
+void DendyDebugger::showMemoryBlock (uchar *block, int size, short startAdress) {
     char* temp = new char[3];
     toHexString (temp, startAdress++, 3);
     QString row = QString::fromUtf8 (temp, 3) + "x:\t";
     
-    for(int i = 0; i < block->size (); i++){
-        toHexString (temp, block->at (i), 2);
+    for(int i = 0; i < size; i++) {
+        toHexString (temp, *(block + i), 2);
         row += QString::fromUtf8 (temp, 2) + " ";
         
         if(i%16 == 15){
@@ -72,7 +72,7 @@ void DendyDebugger::initMemoryView (){
         
     // вывод RAM
     this->ui->memoryView->addItem ("RAM:");
-    this->showMemoryBlock (this->memory->getRAM (), 0x000);
+    this->showMemoryBlock (this->memory->getRAM (), 0x800, 0x000);
      
     this->ui->memoryView->addItem ("");
         
@@ -81,17 +81,17 @@ void DendyDebugger::initMemoryView (){
         
     // вывод WRAM (ОЗУ картриджа)
     this->ui->memoryView->addItem ("WRAM:");
-    this->showMemoryBlock (this->memory->getWRAM (), 0x600);
+    this->showMemoryBlock (this->memory->getWRAM (), 0x2000, 0x600);
     this->ui->memoryView->addItem ("");
         
     // вывод переключаемого банка ПЗУ картриджа
     this->ui->memoryView->addItem ("Switchable ROM:");
-    this->showMemoryBlock (this->memory->getSROM (), 0x800);
+    this->showMemoryBlock (this->memory->getSROM (), 0x4000, 0x800);
     this->ui->memoryView->addItem ("");
         
     // вывод непереключаемого банка ПЗУ картриджа
     this->ui->memoryView->addItem ("Non-switchable ROM:");
-    this->showMemoryBlock (this->memory->getROM (), 0xC00);
+    this->showMemoryBlock (this->memory->getROM (), 0x4000, 0xC00);
     this->ui->memoryView->addItem ("");
 }
 
@@ -117,12 +117,12 @@ void DendyDebugger::initRegisters (){
     toHexString (temp, this->cpu->getRegY (), 2);
     this->ui->yValue->setText (QString::fromUtf8 (temp, 2));
     
-    (this->cpu->getFlagC ()) ? this->ui->C->setCheckState (Qt::Checked) : this->ui->C->setCheckState (Qt::Unchecked);
-    (this->cpu->getFlagD ()) ? this->ui->D->setCheckState (Qt::Checked) : this->ui->D->setCheckState (Qt::Unchecked);
-    (this->cpu->getFlagI ()) ? this->ui->I->setCheckState (Qt::Checked) : this->ui->I->setCheckState (Qt::Unchecked);
-    (this->cpu->getFlagN ()) ? this->ui->N->setCheckState (Qt::Checked) : this->ui->N->setCheckState (Qt::Unchecked);
-    (this->cpu->getFlagV ()) ? this->ui->V->setCheckState (Qt::Checked) : this->ui->V->setCheckState (Qt::Unchecked);
-    (this->cpu->getFlagZ ()) ? this->ui->Z->setCheckState (Qt::Checked) : this->ui->Z->setCheckState (Qt::Unchecked);
+    this->ui->C->setCheckState (this->cpu->getFlagC() ? Qt::Checked : Qt::Unchecked);
+    this->ui->D->setCheckState (this->cpu->getFlagD() ? Qt::Checked : Qt::Unchecked);
+    this->ui->I->setCheckState (this->cpu->getFlagI() ? Qt::Checked : Qt::Unchecked);
+    this->ui->N->setCheckState (this->cpu->getFlagN() ? Qt::Checked : Qt::Unchecked);
+    this->ui->V->setCheckState (this->cpu->getFlagV() ? Qt::Checked : Qt::Unchecked);
+    this->ui->Z->setCheckState (this->cpu->getFlagZ() ? Qt::Checked : Qt::Unchecked);
     
     delete[] temp;
 }
@@ -140,57 +140,48 @@ void DendyDebugger::updateRegP (){
 // при изменении флажков изменить содержимое регистра P
 void DendyDebugger::on_C_stateChanged(int state){
     // set flag C
-    this->cpu->setFlagC (state == Qt::Checked);
-    
+    this->cpu->setFlagC (state == Qt::Checked);    
     this->updateRegP ();
 }
 
 void DendyDebugger::on_Z_stateChanged(int state){
     // set flag Z
-    this->cpu->setFlagZ (state == Qt::Checked);
-    
+    this->cpu->setFlagZ (state == Qt::Checked);   
     this->updateRegP ();
 }
 
 void DendyDebugger::on_I_stateChanged(int state){
     // set flag I
-    this->cpu->setFlagI (state == Qt::Checked);
-    
+    this->cpu->setFlagI (state == Qt::Checked);    
     this->updateRegP ();
 }
 
 void DendyDebugger::on_D_stateChanged(int state){
     // set flag D
-    this->cpu->setFlagD (state == Qt::Checked);
-    
+    this->cpu->setFlagD (state == Qt::Checked);    
     this->updateRegP ();
 }
 
 void DendyDebugger::on_V_stateChanged(int state){
     // set flag V
-    this->cpu->setFlagV (state == Qt::Checked);
-    
+    this->cpu->setFlagV (state == Qt::Checked);    
     this->updateRegP ();
 }
 
 void DendyDebugger::on_N_stateChanged(int state){
     // set flag N
     this->cpu->setFlagN (state == Qt::Checked);
-    
+    this->updateRegP ();
+}
+
+void DendyDebugger::on_B_stateChanged(int state) {
+    // set flag B
+    this->cpu->setFlagB (state == Qt::Checked); 
     this->updateRegP ();
 }
 
 // сброс состояния процессора
-void DendyDebugger::on_resetCPU_clicked()
-{
+void DendyDebugger::on_resetCPU_clicked() {
     this->cpu->resetCPU ();
     this->initRegisters ();
-}
-
-void DendyDebugger::on_B_stateChanged(int state)
-{
-    // set flag B
-    this->cpu->setFlagB (state == Qt::Checked);
-    
-    this->updateRegP ();
 }

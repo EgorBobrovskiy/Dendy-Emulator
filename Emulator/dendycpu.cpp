@@ -1083,7 +1083,8 @@ void DendyCPU::comADC (unsigned char operand){
     this->setFlagV (((result & 0x0100) != 0 && (result & 0x8000) == 0) || (sign != (result & 0x0080)));
     this->setFlagN ((result & 0x0080) != 0);
     
-    this->cpuReg.a = (unsigned char)(result & 0x00FF);
+    this->cpuReg.a = (unsigned char)(result); // оно само должно обрезать младшие 8 бит
+//    this->cpuReg.a = (unsigned char)(result & 0x00FF);
 }
 
 // команда AND (коды 29, 25, 35, 2D, 3D, 39, 21, 31)

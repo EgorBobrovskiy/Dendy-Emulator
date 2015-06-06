@@ -9,6 +9,11 @@ namespace Ui {
 class DendyDebugger;
 }
 
+///
+/// \brief The DendyDebugger class -- окно отладчика Денди. Позволяет просмотреть
+/// содержимое памяти, находящейся в области видимости процессора и содержиое его регистров
+///
+
 class DendyDebugger : public QDialog
 {
     Q_OBJECT
@@ -44,7 +49,7 @@ private:
     void initMemoryView();
     void initRegisters();
     void toHexString(char* dest, unsigned short num, int size);
-    void showMemoryBlock(QByteArray* block, short startAdress = 0x000);
+    void showMemoryBlock(uchar* block, int size, short startAdress = 0x000);
     void updateRegP();
 };
 

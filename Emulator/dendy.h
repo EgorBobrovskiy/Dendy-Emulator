@@ -4,6 +4,10 @@
 #include "dendycpu.h"
 #include "dendymemory.h"
 
+///
+/// \brief The Dendy class -- управляет составляющими консоли
+///
+
 class Dendy
 {
 private:

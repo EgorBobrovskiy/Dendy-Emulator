@@ -76,7 +76,7 @@ void MainWindow::dendyRun (){
     // выполнять обновление экрана
     // полученным кадром
     
-    while (1){
-        this->dendy->getFrame ();
-    }
+//    while (1){
+//        this->dendy->getFrame ();
+//    }
 }

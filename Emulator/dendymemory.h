@@ -2,25 +2,30 @@
 #define DENDYMEMORY_H
 
 #include <QFile>
+#include <cstring>
+#include "dendyvram.h"
 
 using namespace std;
+
+///
+/// \brief The DendyMemory class -- память, находящаяся в области видимости процессора
+///
 
 class DendyMemory
 {
 private:
-    QByteArray* RAM; //встроенное ОЗУ(0000h - 07FFh)
-    QByteArray* WRAM;//ОЗУ картриджа(6000h - 7FFFh)
-    QByteArray* sROM;//переключаемый банк ПЗУ картриджа(8000h - BFFFh)
-    QByteArray* ROM; //непереключаемый банк ПЗУ картриджа(C000h - FFFFh). всегда последняя страница
-    QByteArray* videoRegisters; // регистры видеопроцессора (2000h - 2007h)
-    QByteArray* ctrlRegisters;  // регистры звукового процессора, контроллера прямого доступа к памяти
+    uchar* RAM; //встроенное ОЗУ(0000h - 07FFh)
+    uchar* WRAM;//ОЗУ картриджа(6000h - 7FFFh)
+    uchar* sROM;//переключаемый банк ПЗУ картриджа(8000h - BFFFh)
+    uchar* ROM; //непереключаемый банк ПЗУ картриджа(C000h - FFFFh). всегда последняя страница
+    
+    uchar ctrlRegisters[0x17];  // регистры звукового процессора, контроллера прямого доступа к памяти
                                 // и контроллера ввода/вывода (4000h - 4016h)
     
-    QByteArray** pages;//страницы памяти в картридже
-    int numberOfPages;
+    uchar** pages; //страницы памяти в картридже
+    short numberOfPages;
     
-    QByteArray** signGeneratorData;//для знакогенератора
-    int numberOfSign;
+    DendyVRAM* vRAM;
     
     QFile* nesFile;//файл с данными картриджа (.nes)
 
@@ -31,13 +36,12 @@ public:
     void writeMemory(unsigned short adress, unsigned char value);
     unsigned char readMemory(unsigned short adress);
     
-    QByteArray* getRAM();
-    QByteArray* getWRAM();
-    QByteArray* getSROM();
-    QByteArray* getROM();
+    uchar* getRAM();
+    uchar* getWRAM();
+    uchar *getSROM();
+    uchar *getROM();
     
-    QByteArray** getPages();
-    QByteArray** getSignGeneratorData();
+    uchar **getPages();
 };
 
 #endif // DENDYMEMORY_H
