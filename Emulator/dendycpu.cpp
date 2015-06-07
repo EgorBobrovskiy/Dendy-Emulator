@@ -1070,8 +1070,6 @@ char DendyCPU::stepCPU (){
 void DendyCPU::comADC (unsigned char operand){   
     short result = this->cpuReg.a;
     
-    unsigned char sign = this->cpuReg.a & 0x80; // для фиксирования переноса из 6 разряда в 7
-    
     if (this->getFlagC ()){
         result++;
     }
@@ -1080,7 +1078,7 @@ void DendyCPU::comADC (unsigned char operand){
     
     this->setFlagZ ((result & 0x00FF) == 0); //установка флага, если результат равен 0
     this->setFlagC ((result & 0x0100) != 0); // установка флага, если есть перенос
-    this->setFlagV (((result & 0x0100) != 0 && (result & 0x8000) == 0) || (sign != (result & 0x0080)));
+    this->setFlagV ((this->cpuReg.a ^ result) & (operand ^ result) & 0x80);
     this->setFlagN ((result & 0x0080) != 0);
     
     this->cpuReg.a = (unsigned char)(result); // оно само должно обрезать младшие 8 бит
@@ -1336,8 +1334,6 @@ char DendyCPU::comRTS (){
 void DendyCPU::comSBC (unsigned char operand){
     short result = this->cpuReg.a;
     
-    unsigned char sign = this->cpuReg.a & 0x80; // для фиксирования переноса из 6 разряда в 7
-    
     if (this->getFlagC ()){
         result--;
     }
@@ -1347,7 +1343,7 @@ void DendyCPU::comSBC (unsigned char operand){
     this->setFlagZ ((result & 0x00FF) == 0); //установка флага, если результат равен 0
     this->setFlagC ((result & 0x8000) != 0); // установка флага, если результат < 0
     // флаг V выставляется, если вышло переполнение при вычитании или был изменён знаковый бит результата
-    this->setFlagV ((sign != (result & 0x0080)) || ((result & 0x8000) != 0 && (result & 0x0100) == 0));
+    this->setFlagV ((this->cpuReg.a ^ result) & (operand ^ result) & 0x80);
     
     this->setFlagN ((result & 0x0080) != 0);
     

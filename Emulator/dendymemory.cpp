@@ -19,7 +19,7 @@ DendyMemory::DendyMemory(QFile *nesFile) {
     // заполнение страниц памяти
     int offset; // смещение страницы относительно начала файла
     for (int i = 0; i < this->numberOfPages; i++){
-        (*(this->pages + i)) = new uchar[0x4000];
+        *(this->pages + i) = new uchar[0x4000];
         offset = i * 0x4000 + 16;
         
         for (int j = 0; j < 0x4000; j++){
@@ -42,7 +42,7 @@ DendyMemory::DendyMemory(QFile *nesFile) {
     }
     
     // инициализация видеопамяти
-    this->vRAM = new DendyVRAM(signGeneratorData, numberOfSign);
+    this->vRAM = new DendyVRAM(signGeneratorData, numberOfSign, byteArray.at (6) & 0x01);
     
     this->ROM = *(this->pages + this->numberOfPages - 1); // последняя страница
     this->sROM = *(this->pages);// первая страница в переключаемом банке ПЗУ
@@ -50,12 +50,12 @@ DendyMemory::DendyMemory(QFile *nesFile) {
 
 DendyMemory::~DendyMemory() {    
     for (int i = 0; i < this->numberOfPages; i++) {
-        delete *(this->pages + i);
+        delete[] *(this->pages + i);
     }
     delete[] this->pages;
     
-    delete this->RAM;
-    delete this->WRAM;
+    delete[] this->RAM;
+    delete[] this->WRAM;
     
     delete this->vRAM;
 }
@@ -75,8 +75,7 @@ void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
         
     /* Запись в регистры видеопроцессора */
     case 1:
-//            this->cpu.videoRegisters->remove (adress & 0x0007, 1);
-//            this->cpu.videoRegisters->insert (adress & 0x0007, value);
+        this->vRAM->writeReg (adress & 0x0007, value);
         break;
         
     /* Запись в регистры звукового процессора, контроллера ПДП и ввода/вывода */
@@ -111,8 +110,7 @@ unsigned char DendyMemory::readMemory (unsigned short adress){
         
     /* Чтение регистров видеопроцессора */
     case 1:
-        return 0x00;
-        //return this->cpu.videoRegisters->at (adress & 0x0007);
+        return this->vRAM->readReg (adress & 0x0007);
     
     /* Чтение регистров звукового процессора, контроллера ПДП и ввода/вывода */            
     case 2:

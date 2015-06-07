@@ -2,7 +2,6 @@
 #define DENDYMEMORY_H
 
 #include <QFile>
-#include <cstring>
 #include "dendyvram.h"
 
 using namespace std;
