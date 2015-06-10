@@ -2,6 +2,7 @@
 #define DENDYCPU_H
 
 #include "dendymemory.h"
+#include <iostream>
 
 ///
 /// \brief The DendyCPU class -- эмулятор работы процессора (MOS 6502)

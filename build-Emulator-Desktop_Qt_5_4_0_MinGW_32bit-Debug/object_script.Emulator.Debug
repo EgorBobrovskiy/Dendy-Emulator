@@ -1,0 +1,13 @@
+INPUT(
+./debug\main.o
+./debug\mainwindow.o
+./debug\dendydebugger.o
+./debug\dendycpu.o
+./debug\dendymemory.o
+./debug\dendy.o
+./debug\dendyvram.o
+./debug\dendyppu.o
+./debug\moc_mainwindow.o
+./debug\moc_dendydebugger.o
+./debug\moc_dendy.o
+);

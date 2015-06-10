@@ -49,29 +49,6 @@ char DendyCPU::nmiCPU (){
     return 0x07;
 }
 
-
-//void DendyCPU::runCPU (){
-//    // сброс состояния процессора
-//    this->resetCPU ();
-    
-//    while (RUN){
-//        // уменьшение счётчика тактов
-//        this->iPeriod -= this->stepCPU ();
-        
-//        if (this->iPeriod <= 0){
-//            this->iPeriod += FRAME_PERIOD;
-            
-//            // тут обновить экран
-            
-//            // проверить клавиши
-            
-//            // формируется немаскируемое прерывание
-//            this->nmiCPU ();
-//        }
-        
-//    }
-//}
-
 char DendyCPU::stepCPU (){
     unsigned char opCode = this->memory->readMemory (this->cpuReg.pc.W++);
     unsigned short adress = 0;
@@ -228,14 +205,17 @@ char DendyCPU::stepCPU (){
         
     // BCC i8
     case 0x90:
+        //std::cout << "BCC" << std::endl;
         return this->comBranch (!this->getFlagC ());
         
     // BCS i8
     case 0xB0:
+        //std::cout << "BCS" << std::endl;
         return this->comBranch (this->getFlagC ());
         
     // BEQ i8
     case 0xF0:
+        //std::cout << "BEQ" << std::endl;
         return this->comBranch (this->getFlagZ ());
  
 //----------------------------------------------------------------------------------------------BIT//
@@ -256,28 +236,34 @@ char DendyCPU::stepCPU (){
         
     // BMI i8
     case 0x30:
+        //std::cout << "BMI" << std::endl;
         return this->comBranch (this->getFlagN ());
         
     // BNE i8
     case 0xD0:
+        //std::cout << "BNE" << std::endl;
         return this->comBranch (!this->getFlagZ ());
         
     // BPL i8
     case 0x10:
+        //std::cout << "BPL" << std::endl;
         return this->comBranch (!this->getFlagN ());
         
 //--------------------------------------------------------------------------------------BRK-BVC-BVS//
         
     // BRK
     case 0x00:
+        //std::cout << "BRK" << std::endl;
         return this->comBRK ();
         
     // BVC i8
     case 0x50:
+        //std::cout << "BVC" << std::endl;
         return this->comBranch (!this->getFlagV ());
         
     // BVS i8
     case 0x70:
+        //std::cout << "BVS" << std::endl;
         return this->comBranch (this->getFlagV ());
 
 //----------------------------------------------------------------------------------CLC-CLD-CLI-CLV//        
@@ -285,21 +271,25 @@ char DendyCPU::stepCPU (){
     // CLC
     case 0x18:
         this->setFlagC (false);
+        //std::cout << "CLC" << std::endl;
         return 0x02;
         
     // CLD
     case 0xD8:
         this->setFlagD (false);
+        //std::cout << "CLD" << std::endl;
         return 0x02;
         
     // CLI
     case 0x58:
         this->setFlagI (false);
+        //std::cout << "CLI" << std::endl;
         return 0x02;
         
     // CLV
     case 0xB8:
         this->setFlagV (false);
+        //std::cout << "CLV" << std::endl;
         return 0x02;
         
 //----------------------------------------------------------------------------------------------CMP//
@@ -419,6 +409,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.x--;
         this->setFlagZ (this->cpuReg.x == 0);
         this->setFlagN ((this->cpuReg.x & 0x80) != 0x00);
+        //std::cout << "DEX" << std::endl;
         return 0x02;
         
     // DEY
@@ -426,6 +417,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.y--;
         this->setFlagZ (this->cpuReg.y == 0);
         this->setFlagN ((this->cpuReg.y & 0x80) != 0x00);
+        //std::cout << "DEY" << std::endl;
         return 0x02;
         
 //----------------------------------------------------------------------------------------------EOR//  
@@ -515,6 +507,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.x++;
         this->setFlagZ (this->cpuReg.x == 0);
         this->setFlagN ((this->cpuReg.x & 0x80) != 0x00);
+        //std::cout << "INX" << std::endl;
         return 0x02;
         
     // INY
@@ -522,6 +515,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.y++;
         this->setFlagZ (this->cpuReg.y == 0);
         this->setFlagN ((this->cpuReg.y & 0x80) != 0x00);
+        //std::cout << "INY" << std::endl;
         return 0x02;
         
 //------------------------------------------------------------------------------------------JMP-JSR//
@@ -529,6 +523,7 @@ char DendyCPU::stepCPU (){
     // JMP a16
     case 0x4C:
         this->cpuReg.pc.W = this->adrABS ();
+        //std::cout << "JMP" << std::endl;
         return 0x03;
         
     // JMP (a16)
@@ -537,6 +532,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.pc.B.l = this->memory->readMemory (++adress);
         adress = ((adress & 0x00FF) == 0x00FF) ? (adress & 0xFF00) : (adress + 1);
         this->cpuReg.pc.B.h = this->memory->readMemory (adress + 2);
+        //std::cout << "JMP" << std::endl;
         return 0x05;
         
     // JSR a16
@@ -610,17 +606,17 @@ char DendyCPU::stepCPU (){
         
     // LDX a8
     case 0xA6:
-        this->comLDX (this->adrZP ());
+        this->comLDX (this->memory->readMemory (this->adrZP ()));
         return 0x03;
         
     // LDX a8, Y
     case 0xB6:
-        this->comLDX (this->adrZPY ());
+        this->comLDX (this->memory->readMemory (this->adrZPY ()));
         return 0x04;
         
     // LDX a16
     case 0xAE:
-        this->comLDX (this->adrABS ());
+        this->comLDX (this->memory->readMemory (this->adrABS ()));
         return 0x04;
         
     // LDX a16, Y
@@ -641,17 +637,17 @@ char DendyCPU::stepCPU (){
         
     // LDY a8
     case 0xA4:
-        this->comLDY (this->adrZP ());
+        this->comLDY (this->memory->readMemory (this->adrZP ()));
         return 0x03;
         
     // LDY a8, X
     case 0xB4:
-        this->comLDY (this->adrZPX ());
+        this->comLDY (this->memory->readMemory (this->adrZPX ()));
         return 0x04;
         
     // LDY a16
     case 0xAC:
-        this->comLDY (this->adrABS ());
+        this->comLDY (this->memory->readMemory (this->adrABS ()));
         return 0x04;
         
     // LDY a16, X
@@ -699,6 +695,7 @@ char DendyCPU::stepCPU (){
         
     // NOP (no operation)
     case 0xEA:
+        //std::cout << "NOP" << std::endl;
         return 0x02;
         
 //----------------------------------------------------------------------------------------------ORA//
@@ -711,7 +708,7 @@ char DendyCPU::stepCPU (){
     // ORA a8
     case 0x05:
         adress = this->adrZP ();       
-        this->comAND (this->memory->readMemory (adress));
+        this->comORA (this->memory->readMemory (adress));
         return 0x03; // 3 такта
         
     // ORA a8, X
@@ -723,7 +720,7 @@ char DendyCPU::stepCPU (){
     // ORA a16    
     case 0x0D:    
         adress = this->adrABS ();
-        this->comAND (this->memory->readMemory (adress));
+        this->comORA (this->memory->readMemory (adress));
         return 0x04; // 4 такта
         
     // ORA o16, X    
@@ -762,11 +759,13 @@ char DendyCPU::stepCPU (){
     // PHA
     case 0x48:
         this->pushStack (this->cpuReg.a);
+        //std::cout << "PHA" << std::endl;
         return 0x03;
         
     // PHP
     case 0x08:
         this->pushStack (this->cpuReg.p);
+        //std::cout << "PHP" << std::endl;
         return 0x03;
         
     // PLA
@@ -774,11 +773,13 @@ char DendyCPU::stepCPU (){
         this->cpuReg.a = this->popStack ();
         this->setFlagZ (this->cpuReg.a == 0);
         this->setFlagN ((this->cpuReg.a & 0x80) != 0x00);
+        //std::cout << "PLA" << std::endl;
         return 0x04;
         
     // PLP
     case 0x28:
         this->cpuReg.p = this->popStack ();
+        //std::cout << "PLP" << std::endl;
         return 0x04;
         
 //----------------------------------------------------------------------------------------------ROL//
@@ -918,16 +919,19 @@ char DendyCPU::stepCPU (){
     // SEC
     case 0x38:
         this->setFlagC (true);
+        //std::cout << "SEC" << std::endl;
         return 0x02;
         
     // SED
     case 0xF8:
         this->setFlagD (true);
+        //std::cout << "SED" << std::endl;
         return 0x02;
         
     // SEI
     case 0x78:
         this->setFlagI (true);
+        //std::cout << "SEI" << std::endl;
         return 0x02;
         
 //----------------------------------------------------------------------------------------------STA//
@@ -936,18 +940,21 @@ char DendyCPU::stepCPU (){
     case 0x85:
         adress = this->adrZP ();       
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x03; // 3 такта
         
     // STA a8, X
     case 0x95:
         adress = this->adrZPX ();
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x04; // 4 такта
         
     // STA a16    
     case 0x8D:
         adress = this->adrABS ();
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x04; // 4 такта
         
     // STA a16, X    
@@ -955,6 +962,7 @@ char DendyCPU::stepCPU (){
         adress = this->adrABS ();
         adress += this->cpuReg.x;
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x05;
         
     // STA a16, Y
@@ -962,12 +970,14 @@ char DendyCPU::stepCPU (){
         adress = this->adrABS ();
         adress += this->cpuReg.y;
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x05;
         
     // STA (a8, X)
     case 0x81:
         adress = this->adrINDX ();
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x06; // 6 тактов
         
     // STA (a8), Y
@@ -975,6 +985,7 @@ char DendyCPU::stepCPU (){
         adress = this->adrINDY ();
         adress += this->cpuReg.y;
         this->memory->writeMemory (adress, this->cpuReg.a);
+        //std::cout << "STA" << std::endl;
         return 0x06;
         
 //----------------------------------------------------------------------------------------------STX//
@@ -983,18 +994,21 @@ char DendyCPU::stepCPU (){
     case 0x86:
         adress = this->adrZP ();       
         this->memory->writeMemory (adress, this->cpuReg.x);
+        //std::cout << "STX" << std::endl;
         return 0x03; // 3 такта
         
     // STX a8, Y
     case 0x96:
         adress = this->adrZPY ();
         this->memory->writeMemory (adress, this->cpuReg.x);
+        //std::cout << "STX" << std::endl;
         return 0x04; // 4 такта
         
     // STX a16    
     case 0x8E:
         adress = this->adrABS ();
         this->memory->writeMemory (adress, this->cpuReg.x);
+        //std::cout << "STX" << std::endl;
         return 0x04; // 4 такта
         
 //----------------------------------------------------------------------------------------------STY//
@@ -1003,18 +1017,21 @@ char DendyCPU::stepCPU (){
     case 0x84:
         adress = this->adrZP ();       
         this->memory->writeMemory (adress, this->cpuReg.y);
+        //std::cout << "STY" << std::endl;
         return 0x03; // 3 такта
         
     // STY a8, X
     case 0x94:
         adress = this->adrZPX ();
         this->memory->writeMemory (adress, this->cpuReg.y);
+        //std::cout << "STY" << std::endl;
         return 0x04; // 4 такта
         
     // STY a16    
     case 0x8C:
         adress = this->adrABS ();
         this->memory->writeMemory (adress, this->cpuReg.y);
+        //std::cout << "STY" << std::endl;
         return 0x04; // 4 такта
         
 //--------------------------------------------------------------------------------------TAX-TAY-TSX//
@@ -1024,6 +1041,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.x = this->cpuReg.a;
         this->setFlagZ (this->cpuReg.x == 0x00); 
         this->setFlagN ((this->cpuReg.x & 0x80) != 0);
+        //std::cout << "TAX" << std::endl;
         return 0x02;
         
     // TAY
@@ -1031,6 +1049,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.y = this->cpuReg.a;
         this->setFlagZ (this->cpuReg.y == 0x00); 
         this->setFlagN ((this->cpuReg.y & 0x80) != 0);
+        //std::cout << "TAY" << std::endl;
         return 0x02;
         
     // TSX
@@ -1038,6 +1057,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.x = this->cpuReg.s;
         this->setFlagZ (this->cpuReg.x == 0x00); 
         this->setFlagN ((this->cpuReg.x & 0x80) != 0);
+        //std::cout << "TSX" << std::endl;
         return 0x02;
         
 //--------------------------------------------------------------------------------------TXA-TYA-TXS//
@@ -1047,6 +1067,7 @@ char DendyCPU::stepCPU (){
         this->cpuReg.a = this->cpuReg.x;
         this->setFlagZ (this->cpuReg.a == 0x00); 
         this->setFlagN ((this->cpuReg.a & 0x80) != 0);
+        //std::cout << "TXA" << std::endl;
         return 0x02;
         
     // TYA
@@ -1054,11 +1075,13 @@ char DendyCPU::stepCPU (){
         this->cpuReg.a = this->cpuReg.y;
         this->setFlagZ (this->cpuReg.a == 0x00); 
         this->setFlagN ((this->cpuReg.a & 0x80) != 0);
+        //std::cout << "TYA" << std::endl;
         return 0x02;
         
-    // TSX
+    // TXS
     case 0x9A:
         this->cpuReg.s = this->cpuReg.x;
+        //std::cout << "TXS" << std::endl;
         return 0x02;        
     }
     
@@ -1082,6 +1105,7 @@ void DendyCPU::comADC (unsigned char operand){
     this->setFlagN ((result & 0x0080) != 0);
     
     this->cpuReg.a = (unsigned char)(result); // оно само должно обрезать младшие 8 бит
+    //std::cout << "ADC" << std::endl;
 //    this->cpuReg.a = (unsigned char)(result & 0x00FF);
 }
 
@@ -1094,6 +1118,7 @@ void DendyCPU::comAND (unsigned char operand){
     
     // установка флага N в значение бита знака результата
     this->setFlagN ((this->cpuReg.a & 0x80) != 0);
+    //std::cout << "AND" << std::endl;
 }
 
 // команда ASL (коды 0A, 06, 16, 0E, 1E)
@@ -1109,6 +1134,7 @@ unsigned char DendyCPU::comASL (unsigned char operand){
     // установка флага знака
     this->setFlagN ((operand & 0x80) != 0);
     
+    //std::cout << "ASL" << std::endl;
     return operand;
 }
 
@@ -1119,6 +1145,8 @@ void DendyCPU::comBIT (unsigned char operand){
     this->setFlagZ (operand == 0x00);
     this->setFlagN ((operand & 0x80) > 0);
     this->setFlagV ((operand & 0x40) > 0);
+    
+    //std::cout << "BIT" << std::endl;
 }
 
 // условный переход (branch on ...)
@@ -1128,6 +1156,7 @@ char DendyCPU::comBranch (bool condition){
         this->cpuReg.pc.W = this->adrREL ();
         return ((adress & 0x1100) == (this->cpuReg.pc.W & 0x1100)) ? 0x03 : 0x04;
     }
+    this->cpuReg.pc.W++;
     return 0x02;
 }
 
@@ -1143,6 +1172,7 @@ char DendyCPU::comBRK (){
     this->setFlagB (true);
     this->setFlagI (true);
         
+    //std::cout << "BRK" << std::endl;
     return 0x07;
 }
 
@@ -1155,28 +1185,31 @@ void DendyCPU::comCMP (unsigned char operand){
     this->setFlagZ (result == 0x0000);
     this->setFlagC ((result & 0x0100) == 0x0000);
     this->setFlagN ((result & 0x0080) != 0x0000);
+    //std::cout << "CMP" << std::endl;
 }
 
 // команда CPX (коды E0, E4, EC)
 void DendyCPU::comCPX (unsigned char operand){
-    unsigned short result = 0x0100; 
-    result += this->cpuReg.x;
+    unsigned short result = this->cpuReg.x;
     result -= operand;
     
     this->setFlagZ (result == 0x0000);
-    this->setFlagC ((result & 0x0100) == 0x0000);
+    this->setFlagC ((result & 0x8000) == 0x8000);
     this->setFlagN ((result & 0x0080) != 0x0000);
+    
+    //std::cout << "CPX" << std::endl;
 }
 
 // команда CPY (коды C0, C4, CC)
 void DendyCPU::comCPY (unsigned char operand){
-    unsigned short result = 0x0100; 
-    result += this->cpuReg.y;
+    unsigned short result = this->cpuReg.y; 
     result -= operand;
     
     this->setFlagZ (result == 0x0000);
-    this->setFlagC ((result & 0x0100) == 0x0000);
+    this->setFlagC ((result & 0x8000) == 0x8000);
     this->setFlagN ((result & 0x0080) != 0x0000);
+    
+    //std::cout << "CPY" << std::endl;
 }
 
 // команда DEC (коды C6, D6, CE, DE)
@@ -1188,6 +1221,8 @@ void DendyCPU::comDEC (unsigned short adress){
     this->setFlagN ((operand & 0x80) != 0x00);
     
     this->memory->writeMemory (adress, operand);
+    
+    //std::cout << "DEC" << std::endl;
 }
 
 // команда EOR (коды 49, 45, 55, 4D, 5D, 59, 41, 51)
@@ -1196,7 +1231,7 @@ void DendyCPU::comEOR (unsigned char operand){
     
     this->setFlagZ (this->cpuReg.a == 0x00);
     this->setFlagN ((operand & 0x80) != 0x00);
-    
+    //std::cout << "EOR" << std::endl;
 }
 
 // команда INC (коды E6, F6, EE, FE)
@@ -1208,6 +1243,7 @@ void DendyCPU::comINC (unsigned short adress){
     this->setFlagN ((operand & 0x80) != 0x00);
     
     this->memory->writeMemory (adress, operand);
+    //std::cout << "INC" << std::endl;
 }
 
 // переход к выполнению подпрограммы (код 20)
@@ -1219,6 +1255,7 @@ char DendyCPU::comJSR (){
     this->pushStack (this->cpuReg.pc.B.l);
     
     this->cpuReg.pc.W = newAdress;
+    //std::cout << "JSR" << std::endl;
     return 0x06;
 }
 
@@ -1227,7 +1264,8 @@ void DendyCPU::comLDA (unsigned char operand){
     this->cpuReg.a = operand;
     
     this->setFlagZ (operand == 0);
-    this->setFlagN ((operand & 0x80) != 0x00);
+    this->setFlagN ((operand & 0x80) == 0x80);
+    //std::cout << "LDA " << operand << std::endl;
 }
 
 // команда LDX (коды A2, A6, B6, AE, BE)
@@ -1236,6 +1274,7 @@ void DendyCPU::comLDX (unsigned char operand){
     
     this->setFlagZ (operand == 0);
     this->setFlagN ((operand & 0x80) != 0x00);
+    //std::cout << "LDX" << std::endl;
 }
 
 // команда LDY (коды A0, A4, B4, AC, BC)
@@ -1244,6 +1283,7 @@ void DendyCPU::comLDY (unsigned char operand){
     
     this->setFlagZ (operand == 0);
     this->setFlagN ((operand & 0x80) != 0x00);
+    //std::cout << "LDY" << std::endl;
 }
 
 // команда LSR (коды 4A, 46, 56, 4E, 5E)
@@ -1259,6 +1299,8 @@ unsigned char DendyCPU::comLSR (unsigned char operand){
     // установка флага знака
     this->setFlagN (false);
     
+    //std::cout << "LSR" << std::endl;
+    
     return operand;
 }
 
@@ -1271,6 +1313,8 @@ void DendyCPU::comORA (unsigned char operand){
     
     // установка в флаг N значение бита знака результата
     this->setFlagN ((this->cpuReg.a & 0x80) != 0);
+    
+    //std::cout << "ORA" << std::endl;
 }
 
 // команда ROL (коды 2A, 26, 36, 2E, 3E)
@@ -1289,6 +1333,8 @@ unsigned char DendyCPU::comROL (unsigned char operand){
     
     // установка флага знака
     this->setFlagN ((operand & 0x80) != 0);
+    
+    //std::cout << "ROL" << std::endl;
     
     return operand;
 }
@@ -1310,6 +1356,8 @@ unsigned char DendyCPU::comROR (unsigned char operand){
     // установка флага знака
     this->setFlagN ((operand & 0x80) != 0);
     
+    //std::cout << "ROR" << std::endl;
+    
     return operand;
 }
 
@@ -1319,6 +1367,8 @@ char DendyCPU::comRTI(){
     this->cpuReg.pc.B.l = this->popStack ();
     this->cpuReg.pc.B.h = this->popStack ();
     
+    //std::cout << "RTI" << std::endl;
+    
     return 0x06;
 }
 
@@ -1326,6 +1376,8 @@ char DendyCPU::comRTI(){
 char DendyCPU::comRTS (){
     this->cpuReg.pc.B.l = this->popStack ();
     this->cpuReg.pc.B.h = this->popStack ();
+    
+    //std::cout << "RTS" << std::endl;
     
     return 0x06;
 }
@@ -1348,6 +1400,8 @@ void DendyCPU::comSBC (unsigned char operand){
     this->setFlagN ((result & 0x0080) != 0);
     
     this->cpuReg.a = (unsigned char)(result & 0x00FF);
+    
+    //std::cout << "SBC" << std::endl;
 }
 
 //-------------------------------------------------------------------------------------методы адресации//
@@ -1377,8 +1431,8 @@ unsigned short DendyCPU::adrZPY (){
 // прямая адресация
 unsigned short DendyCPU::adrABS (){
     unsigned short adress = this->memory->readMemory (this->cpuReg.pc.W + 1);
-    adress = adress<<2;
-    adress = this->memory->readMemory (this->cpuReg.pc.W);
+    adress = adress<<8;
+    adress += this->memory->readMemory (this->cpuReg.pc.W);
     this->cpuReg.pc.W += 2;
     return adress;
 }
@@ -1389,7 +1443,7 @@ unsigned short DendyCPU::adrINDX (){
     unsigned short highByte = this->memory->readMemory (this->cpuReg.pc.W++);
     highByte += this->cpuReg.x;
     adress = this->memory->readMemory ((highByte + 1) & 0x00FF);
-    adress = adress<<2;
+    adress = adress<<8;
     adress += this->memory->readMemory (highByte & 0x00FF);
     return adress;
 }
@@ -1398,30 +1452,29 @@ unsigned short DendyCPU::adrINDX (){
 unsigned short DendyCPU::adrINDY (){
     unsigned short highByte = this->memory->readMemory (this->cpuReg.pc.W++);
     unsigned short adress = this->memory->readMemory ((highByte + 1) & 0x00FF);
-    adress = adress<<2;
+    adress = adress<<8;
     adress += this->memory->readMemory (highByte);
     return adress;
 }
 
 // относительная адресация
 unsigned short DendyCPU::adrREL (){
-    short temp = this->cpuReg.pc.W + 1;
-    temp += (signed char)this->memory->readMemory (this->cpuReg.pc.W++);
-    return (unsigned short)temp;
+    ushort temp = this->cpuReg.pc.W + 1;
+    uchar low = temp & 0x00FF;
+    temp &= 0xFF00;
+    low += this->memory->readMemory (this->cpuReg.pc.W);
+    temp |= low;
+    return temp;
 }
 
 void DendyCPU::pushStack (unsigned char value){
     this->memory->writeMemory (0x0100 + this->cpuReg.s, value);
-    if (this->cpuReg.s){
-        this->cpuReg.s--;
-    }
+    this->cpuReg.s--;
 }
 
 unsigned char DendyCPU::popStack (){
-    if (this->cpuReg.s != 0xFF){
-        this->cpuReg.s++;
-    }
-    return this->memory->readMemory (0xFF + this->cpuReg.s);
+    this->cpuReg.s++;
+    return this->memory->readMemory (0x0100 + this->cpuReg.s);
 }
 //----------------------------------------------------------------------------------------------стек//
 
@@ -1458,31 +1511,31 @@ unsigned char DendyCPU::getRegY (){
 }
 
 bool DendyCPU::getFlagB (){
-    return ((this->cpuReg.p & 0x10) > 0);
+    return ((this->cpuReg.p & 0x10) != 0);
 }
 
 bool DendyCPU::getFlagC (){
-    return ((this->cpuReg.p & 0x01) > 0);
+    return ((this->cpuReg.p & 0x01) != 0);
 }
 
 bool DendyCPU::getFlagD (){
-    return ((this->cpuReg.p & 0x08) > 0);
+    return ((this->cpuReg.p & 0x08) != 0);
 }
 
 bool DendyCPU::getFlagI (){
-    return ((this->cpuReg.p & 0x04) > 0);
+    return ((this->cpuReg.p & 0x04) != 0);
 }
 
 bool DendyCPU::getFlagN (){
-    return ((this->cpuReg.p & 0x80) > 0);
+    return ((this->cpuReg.p & 0x80) != 0);
 }
 
 bool DendyCPU::getFlagV (){
-    return ((this->cpuReg.p & 0x40) > 0);
+    return ((this->cpuReg.p & 0x40) != 0);
 }
 
 bool DendyCPU::getFlagZ (){
-    return ((this->cpuReg.p & 0x02) > 0);
+    return ((this->cpuReg.p & 0x02) != 0);
 }
 
 void DendyCPU::setFlagB (bool state){

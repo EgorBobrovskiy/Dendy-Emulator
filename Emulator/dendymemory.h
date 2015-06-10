@@ -27,6 +27,16 @@ private:
     DendyVRAM* vRAM;
     
     QFile* nesFile;//файл с данными картриджа (.nes)
+    
+    uchar register4016;
+    uchar register4017;
+    uchar previous4016;
+    uchar joy1;
+    uchar joy2;
+    // 0 - A; 1 - B; 2 - SELECT; 3 - START
+    // 4 - UP; 5 - DOWN; 6 - LEFT; 7 - RIGHT
+    bool keyPressed[8];
+    void fixKeyState();
 
 public:
     DendyMemory(QFile* nesFile);
@@ -35,12 +45,16 @@ public:
     void writeMemory(unsigned short adress, unsigned char value);
     unsigned char readMemory(unsigned short adress);
     
+    void writeDMA(ushort adress);
+    void setKeyState(uchar number, bool state);
+    
+    DendyVRAM* getDendyVRAM();
+    
     uchar* getRAM();
     uchar* getWRAM();
-    uchar *getSROM();
-    uchar *getROM();
-    
-    uchar **getPages();
+    uchar* getSROM();
+    uchar* getROM();
+    uchar** getPages();
 };
 
 #endif // DENDYMEMORY_H

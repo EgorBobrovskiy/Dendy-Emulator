@@ -18,14 +18,16 @@ SOURCES += main.cpp\
     dendycpu.cpp \
     dendymemory.cpp \
     dendy.cpp \
-    dendyvram.cpp
+    dendyvram.cpp \
+    dendyppu.cpp
 
 HEADERS  += mainwindow.h \
     dendydebugger.h \
     dendycpu.h \
     dendymemory.h \
     dendy.h \
-    dendyvram.h
+    dendyvram.h \
+    dendyppu.h
 
 FORMS    += mainwindow.ui \
     dendydebugger.ui

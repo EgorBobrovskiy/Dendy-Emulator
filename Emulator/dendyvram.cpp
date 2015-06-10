@@ -7,6 +7,10 @@ DendyVRAM::DendyVRAM(QByteArray **signGeneratorData, short numberOfPages, uchar 
     this->vGap = 0;
     this->horv = 1;
     this->autoincrement = 1;
+    this->allowNMI = true;
+    this->sprites8x8 = true;
+    this->bgrdVisible = true;
+    this->sprVisible = true;
     
     this->signGeneratorData = signGeneratorData;
     this->numberOfPages = numberOfPages;
@@ -43,10 +47,14 @@ DendyVRAM::DendyVRAM(QByteArray **signGeneratorData, short numberOfPages, uchar 
     std::memset(this->spritePalette, 0, 0x010);
     
     this->spriteMemory = new SpriteMemory;
+    for (ushort i = 0; i < 256; i++) {
+        this->spriteMemory->byte[i] = 0xFF;
+    }
     
     for (short i = 0; i < 8; i++) {
         this->ppuRegister[i] = 0;
     }
+    this->ppuRegister[2] |= 0x80;
 }
 
 DendyVRAM::~DendyVRAM() {
@@ -100,8 +108,13 @@ void DendyVRAM::write(ushort adress, uchar value) {
     case 3:
         if ((adress & 0xFF00) == 0x3F00) {
             // запись в палитры
-            if ((adress & 0x00F0) == 0x0000) *(this->bgrdPalette + (adress & 0x000F)) = value;
-            if ((adress & 0x00F0) == 0x0010) *(this->spritePalette + (adress & 0x000F)) = value;
+            if ((adress & 0x0003) != 0) {
+                if ((adress & 0x00F0) == 0x0000) *(this->bgrdPalette + (adress & 0x000F)) = value;
+                if ((adress & 0x00F0) == 0x0010) *(this->spritePalette + (adress & 0x000F)) = value;
+            } else {
+                // отражение цветов с нулевыми младшими битами
+                *(this->bgrdPalette + 0x00) = value;
+            }
         } else {
             // запись в отражение экранных страниц
             *(this->getSPByte (adress & 0x0FFF)) = value;
@@ -118,7 +131,18 @@ uchar* DendyVRAM::getSPByte (ushort adress) {
         // это атрибуты страницы
         return *(this->spAttr + (adress >> 10)) + (adress & 0x003F);
     } else {
-        return *(this->spSymb + (adress >> 10)) + (adress & 0x03BF);
+        // а это символы страницы
+        ushort page = adress >> 10;
+        // вертикальное отражение
+        if (this->mirroring) {
+            if (page == 2) page = 0;
+            if (page == 3) page = 1;
+        } else {
+            // горизонтальное отражение
+            if (page == 1) page = 0;
+            if (page == 3) page = 2;
+        }
+        return *(this->spSymb + page) + (adress & 0x03BF);
     }
 }
 
@@ -139,8 +163,13 @@ uchar DendyVRAM::read (ushort adress) {
     case 3:
         if ((adress & 0xFF00) == 0x3F00) {
             // чтение из палитры
-            if ((adress & 0x00F0) == 0x0000) return *(this->bgrdPalette + (adress & 0x000F));
-            if ((adress & 0x00F0) == 0x0010) return *(this->spritePalette + (adress & 0x000F));
+            if ((adress & 0x0003) != 0) {
+                if ((adress & 0x00F0) == 0x0000) return *(this->bgrdPalette + (adress & 0x000F));
+                if ((adress & 0x00F0) == 0x0010) return *(this->spritePalette + (adress & 0x000F));
+            } else {
+                // чтение из отражения палитры
+                return *(this->bgrdPalette + 0x00);
+            }
         } else {
             // чтение из отражения экранных страниц
             return *(this->getSPByte (adress & 0x0FFF));
@@ -164,6 +193,11 @@ void DendyVRAM::writeReg (ushort regNumber, uchar value) {
         this->bgrdSG = *(this->signGenerator + ((value>>4) & 0x01));
         this->spriteSG = *(this->signGenerator + ((value>>3) & 0x01));
         
+        // разрешение формирования NMI
+        this->allowNMI = ((value & 0x80) == 0x80);
+        // размер спрайтов
+        this->sprites8x8 = ((value & 0x20) != 0x20);
+        
         // 1 - автоинкремент на 32; 0 - на 1
         this->autoincrement = (value & 0x04) ? 32 : 1;
         break;
@@ -171,6 +205,8 @@ void DendyVRAM::writeReg (ushort regNumber, uchar value) {
     // регистр управления
     case 1:
         this->ppuRegister[1] = value;
+        this->sprVisible = ((value & 0x10) != 0);
+        this->bgrdVisible = ((value & 0x08) != 0);
         break;
       
     // запись адреса в памяти спрайтов
@@ -223,7 +259,8 @@ uchar DendyVRAM::readReg (ushort regNumber) {
     // состояние видеопроцессора
     case 2:
         temp = this->ppuRegister[2];
-        this->ppuRegister[2] &= 0x7F;
+        // старшие биты сбрасываются при чтении
+        this->ppuRegister[2] &= 0x3F;
         return temp;
         
     // чтение из памяти спрайтов
@@ -251,4 +288,35 @@ uchar DendyVRAM::readReg (ushort regNumber) {
     }
     
     return 0x00;
+}
+
+void DendyVRAM::synchImpuls () {
+    // сброс бита вывода 0-го спрайта
+    this->ppuRegister[2] &= 0xBF;
+}
+
+bool DendyVRAM::backgroundVisible (){
+    return this->bgrdVisible;
+}
+
+bool DendyVRAM::spritesVisible () {
+    return this->sprVisible;
+}
+
+bool DendyVRAM::isNMIAllowed () {
+    return this->allowNMI;
+}
+
+bool DendyVRAM::spriteIs8x8 () {
+    return this->sprites8x8;
+}
+
+void DendyVRAM::writeInSpriteMemory (uchar values[]) {
+    for (ushort i = 0; i < 0x100; i++) {
+        this->spriteMemory->byte[i] = values[i];
+    }
+}
+
+void DendyVRAM::sprite0shown (){
+    this->ppuRegister[2] |= 0x40;
 }

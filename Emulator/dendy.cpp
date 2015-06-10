@@ -1,9 +1,10 @@
 #include "dendy.h"
 #define FRAME_PERIOD 35468 // количество тактов до формирования кадра
 
-Dendy::Dendy(QFile* nesFile){
+Dendy::Dendy(QFile* nesFile, QObject *parent) : QObject(parent) {
     this->memory = new DendyMemory(nesFile);
     this->cpu = new DendyCPU(this->memory);
+    this->ppu = new DendyPPU(this->memory->getDendyVRAM ());
     
     this->period = 0;
 }
@@ -13,9 +14,7 @@ Dendy::~Dendy(){
     delete this->memory;
 }
 
-// изменить 
-void Dendy::getFrame (){
-    this->cpu->resetCPU ();
+void Dendy::getFrame (QGraphicsPixmapItem* pixmap){
     this->period += FRAME_PERIOD;
     
     // выполнять программу до формирования кадра
@@ -24,11 +23,12 @@ void Dendy::getFrame (){
     } while (this->period > 0);
     
     // получить кадр
-    
-    // проверить клавиши
+    this->ppu->drawFrame (pixmap);
     
     // формируется немаскируемое прерывание
-    this->period -= this->cpu->nmiCPU ();
+    if (this->ppu->isNMIAllowed ()) {
+        this->period -= this->cpu->nmiCPU ();
+    }
 }
 
 DendyCPU* Dendy::getCPU (){
@@ -39,3 +39,6 @@ DendyMemory* Dendy::getMemory (){
     return this->memory;
 }
 
+void Dendy::setKeyState (uchar number, bool state) {
+    this->memory->setKeyState (number, state);
+}

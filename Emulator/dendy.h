@@ -2,27 +2,35 @@
 #define DENDY_H
 
 #include "dendycpu.h"
-#include "dendymemory.h"
+#include "dendyppu.h"
+#include <QGraphicsPixmapItem>
+#include <QObject>
 
 ///
 /// \brief The Dendy class -- управляет составляющими консоли
 ///
 
-class Dendy
-{
+class Dendy : public QObject{
 private:
+    Q_OBJECT
+    
     DendyCPU* cpu;
     DendyMemory* memory;
+    DendyPPU* ppu;
     
     int period;
     
 public:
-    Dendy(QFile *nesFile);
+    explicit Dendy(QFile *nesFile, QObject* parent = 0);
     ~Dendy();
     
-    void getFrame();
     DendyCPU* getCPU();
     DendyMemory* getMemory();
+    
+    void setKeyState(uchar number, bool state);
+    
+public slots:
+    void getFrame(QGraphicsPixmapItem* pixmap);
 };
 
 #endif // DENDY_H

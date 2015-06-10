@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\dendydebugger.o
+./release\dendycpu.o
+./release\dendymemory.o
+./release\dendy.o
+./release\dendyvram.o
+./release\dendyppu.o
+./release\moc_mainwindow.o
+./release\moc_dendydebugger.o
+./release\moc_dendy.o
+);

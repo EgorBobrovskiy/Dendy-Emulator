@@ -1,6 +1,13 @@
 #include "dendymemory.h"
 
 DendyMemory::DendyMemory(QFile *nesFile) {
+    for (uchar i = 0; i < 8; i++) {
+        this->keyPressed[i] = false;
+    }
+    this->previous4016 = 0;
+    this->register4016 = 0x00;
+    this->register4017 = 0x00;
+    
     this->RAM = new uchar[0x800];
     this->WRAM = new uchar[0x2000];
     std::memset(this->RAM, 0, 0x800);
@@ -80,8 +87,22 @@ void DendyMemory::writeMemory (unsigned short adress, unsigned char value){
         
     /* Запись в регистры звукового процессора, контроллера ПДП и ввода/вывода */
     case 2:
-//            this->cpu.ctrlRegisters->remove (0x001F, 1);
-//            this->cpu.ctrlRegisters->insert (0x001F, value);
+        if (adress == 0x4014) {
+            //контроллер ПДП
+            this->writeDMA (adress);
+        }
+        break;
+        
+        // запись в регистр управления пультами
+        // (наверняка для записи)
+        if (adress == 0x4016) {
+            // если это запись стробирующего сигнала для фиксации 
+            // состояния клавиш
+            if ((previous4016 & 0x01) == 0x01 && (value & 0x01) == 0x00) {
+                this->fixKeyState ();
+            }
+            previous4016 = value;
+        }
         break;
         
     /* Запись в переключаемый банк ПЗУ картриджа */
@@ -114,9 +135,24 @@ unsigned char DendyMemory::readMemory (unsigned short adress){
     
     /* Чтение регистров звукового процессора, контроллера ПДП и ввода/вывода */            
     case 2:
-//        if (adress >= 0x4000 && adress <= 0x4016){
-//            return this->cpu.ctrlRegisters->at (adress & 0x001F);
-//        }
+        // чтение состояния 1 пульта
+        if (adress == 0x4016) {
+            // курок не нажат, диод не засвечен
+            this->register4016 = this->joy1 & 0x01;
+            this->register4016 |= 0xF6;
+            this->joy1 = this->joy1 >> 1;
+            return this->register4016;
+        }
+        
+        // чтение состояния 2 пульта
+        if (adress == 0x4017) {
+            // курок не нажат, диод не засвечен
+            this->register4017 = this->joy2 & 0x01;
+            this->register4017 |= 0xF6;
+            this->joy2 = this->joy2 >> 1;
+            return this->register4017;
+        }
+        
         return 0x00;
         
     /* Чтение из переключаемого банка ПЗУ картриджа */
@@ -151,4 +187,39 @@ uchar* DendyMemory::getSROM (){
 
 uchar* DendyMemory::getWRAM (){
     return this->WRAM;
+}
+
+DendyVRAM* DendyMemory::getDendyVRAM () {
+    return this->vRAM;
+}
+
+void DendyMemory::writeDMA (ushort adress){
+    uchar data[0x100];
+    adress = adress << 8;
+    
+    for (ushort i = 0; i < 0x100; i++) {
+        data[i] = this->readMemory (adress + i);
+    }
+    
+    this->vRAM->writeInSpriteMemory (data);
+}
+
+void DendyMemory::setKeyState (uchar number, bool state) {
+    if (number < 8) {
+        this->keyPressed[number] = state;
+    }
+}
+
+void DendyMemory::fixKeyState () {
+    this->joy1 = 0x00;
+    this->joy2 = 0x00;
+    
+    uchar temp = 0x01;
+    for (uchar i = 0; i < 8; i++){
+        if (this->keyPressed[i]) joy1 |= temp;
+        temp = temp << 1;
+    }
+    
+    this->joy1 ^= 0xFF;
+    this->joy2 ^= 0xFF;
 }

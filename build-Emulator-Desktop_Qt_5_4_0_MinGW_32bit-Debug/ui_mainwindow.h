@@ -14,6 +14,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLayout>
@@ -39,7 +40,7 @@ public:
     QWidget *horizontalLayoutWidget;
     QHBoxLayout *dendyLayout;
     QSpacerItem *dHSpacerL;
-    QOpenGLWidget *dendyVideoOutput;
+    QGraphicsView *dendyOutput;
     QSpacerItem *dHSpacerC;
     QFrame *dVLineL;
     QVBoxLayout *dendyTools;
@@ -111,14 +112,17 @@ public:
 
         dendyLayout->addItem(dHSpacerL);
 
-        dendyVideoOutput = new QOpenGLWidget(horizontalLayoutWidget);
-        dendyVideoOutput->setObjectName(QStringLiteral("dendyVideoOutput"));
-        sizePolicy.setHeightForWidth(dendyVideoOutput->sizePolicy().hasHeightForWidth());
-        dendyVideoOutput->setSizePolicy(sizePolicy);
-        dendyVideoOutput->setMinimumSize(QSize(512, 480));
-        dendyVideoOutput->setMaximumSize(QSize(512, 480));
+        dendyOutput = new QGraphicsView(horizontalLayoutWidget);
+        dendyOutput->setObjectName(QStringLiteral("dendyOutput"));
+        sizePolicy.setHeightForWidth(dendyOutput->sizePolicy().hasHeightForWidth());
+        dendyOutput->setSizePolicy(sizePolicy);
+        dendyOutput->setMinimumSize(QSize(512, 480));
+        dendyOutput->setMaximumSize(QSize(512, 480));
+        dendyOutput->setFrameShape(QFrame::NoFrame);
+        dendyOutput->setFrameShadow(QFrame::Plain);
+        dendyOutput->setLineWidth(0);
 
-        dendyLayout->addWidget(dendyVideoOutput);
+        dendyLayout->addWidget(dendyOutput);
 
         dHSpacerC = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
